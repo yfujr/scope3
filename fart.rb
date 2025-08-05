@@ -21,17 +21,21 @@ trap("INT") do
 end
 
 def valid_username?(username)
+  puts "Checking username: #{username}"
   url = URI.parse("https://auth.roblox.com/v1/usernames/validate?request.username=#{username}&request.birthday=#{BIRTHDAY}")
   http = Net::HTTP.new(url.host, url.port)
   http.use_ssl = true
+  http.read_timeout = 5
   req = Net::HTTP::Get.new(url.request_uri)
   req["Accept-Encoding"] = "gzip, deflate, br"
+  # Comment this line if you want to test without .ROBLOSECURITY cookie
   req["Cookie"] = ".ROBLOSECURITY=#{ROBLO_SECURITY}"
 
   begin
     response = http.request(req)
-  rescue
-    retry
+  rescue => e
+    puts "Request error for #{username}: #{e}"
+    return false
   end
 
   body = response.body
@@ -72,6 +76,8 @@ def alphanumeric_permutations_iter(input, length)
   end
 end
 
+puts "Starting username checks..."
+
 begin
   success_f = File.open("success", "a")
   fail_f = File.open("failure", "a")
@@ -80,6 +86,7 @@ begin
   alphanumeric_permutations_iter(POSSIBLE_CHARACTERS, 5).each do |username|
     operation(username, i, success_f, fail_f)
     i += 1
+    puts "Checked #{i} usernames..." if i % 100 == 0
   end
 
 rescue IOError => e
