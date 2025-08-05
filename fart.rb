@@ -68,7 +68,7 @@ def alphanumeric_permutations(input, length, current_str)
 end
 
 begin
-  combos = alphanumeric_permutations(POSSIBLE_CHARACTERS, 13, '')
+  combos = alphanumeric_permutations(POSSIBLE_CHARACTERS, 5, '')
   success_f = File.open("success", "a")
   fail_f = File.open("failure", "a")
   i = 0
